@@ -9,9 +9,7 @@ class Controller:
         self.ins_list = list()
         self.ins_current_id = 0 # The next instruction to execute
 
-        self.reg_size = 32
-        self.mem_size = 4096
-        self.registers = Reg(size=self.reg_size)
+        self.reg_size = 32 self.mem_size = 4096 self.registers = Reg(size=self.reg_size)
         self.memory = Mem(size=self.mem_size)
 
         # 0-2 load
@@ -57,7 +55,7 @@ class Controller:
             self.ins_list.append(Ins.parse(ins_line))
     
     def write_memory(self, index, data):
-        self.memory.set_item(index/4, data)
+        self.memory.set_item(index/4, float(data))
     def read_memory(self, index):
         return self.memory.get_item(index/4)
 
