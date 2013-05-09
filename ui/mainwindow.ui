@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>875</width>
+    <width>892</width>
     <height>668</height>
    </rect>
   </property>
@@ -37,6 +37,9 @@
           <property name="editTriggers">
            <set>QAbstractItemView::NoEditTriggers</set>
           </property>
+          <property name="rowCount">
+           <number>0</number>
+          </property>
           <attribute name="horizontalHeaderDefaultSectionSize">
            <number>100</number>
           </attribute>
@@ -51,11 +54,6 @@
           </attribute>
           <column>
            <property name="text">
-            <string>Index</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
             <string>Op</string>
            </property>
           </column>
@@ -66,7 +64,7 @@
           </column>
           <column>
            <property name="text">
-            <string>Srci</string>
+            <string>Srcj</string>
            </property>
           </column>
           <column>
@@ -76,7 +74,17 @@
           </column>
           <column>
            <property name="text">
-            <string>State</string>
+            <string>发射</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>执行</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>写回</string>
            </property>
           </column>
          </widget>
@@ -151,12 +159,12 @@
           </column>
           <column>
            <property name="text">
-            <string>Vj</string>
+            <string>Vk</string>
            </property>
           </column>
           <column>
            <property name="text">
-            <string>Vk</string>
+            <string>Qj</string>
            </property>
           </column>
           <column>
@@ -273,11 +281,6 @@
             <string>Address</string>
            </property>
           </column>
-          <column>
-           <property name="text">
-            <string>Qi</string>
-           </property>
-          </column>
          </widget>
         </item>
         <item>
@@ -347,18 +350,32 @@
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="4" column="1">
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
+        <item row="0" column="0">
+         <widget class="QToolButton" name="toolButton">
+          <property name="text">
+           <string>...</string>
           </property>
-          <property name="sizeHint" stdset="0">
+          <property name="icon">
+           <iconset resource="res.qrc">
+            <normaloff>:/icon/clock.png</normaloff>:/icon/clock.png</iconset>
+          </property>
+          <property name="iconSize">
            <size>
-            <width>20</width>
-            <height>40</height>
+            <width>32</width>
+            <height>32</height>
            </size>
           </property>
-         </spacer>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="lblClock">
+          <property name="text">
+           <string>0</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_7">
@@ -367,8 +384,8 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="edtMemValue">
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="edtMemAddr">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -390,15 +407,8 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QPushButton" name="btnMemModify">
-          <property name="text">
-           <string>修改内存</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="edtMemAddr">
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="edtMemValue">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -407,8 +417,15 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <spacer name="verticalSpacer_2">
+        <item row="3" column="1">
+         <widget class="QPushButton" name="btnMemModify">
+          <property name="text">
+           <string>修改内存</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -543,7 +560,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>875</width>
+     <width>892</width>
      <height>28</height>
     </rect>
    </property>

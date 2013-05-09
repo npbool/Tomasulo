@@ -2,6 +2,7 @@
 from PyQt4 import QtCore,QtGui
 import sys
 from ui import ui_mainwindow
+import emulator.controller
 class InsInputDialog(QtGui.QDialog):
     def __init__(self,parent=None):
         QtGui.QDialog.__init__(self,parent)
@@ -27,8 +28,6 @@ class InsInputDialog(QtGui.QDialog):
 
     def getIns(self):
         return self.edit.toPlainText()
-        
-
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self,parent=None):
@@ -38,10 +37,93 @@ class MainWindow(QtGui.QMainWindow):
         self.adjustUi()
         self.bindSignal()
         
-        self.runTimer = QtCore.QTimer()
+        self.timer = QtCore.QTimer()
+        
+        self.emu = emulator.controller.Controller() 
+        self.state = 0 #0:initial 1:loade 2:step 3:run
+
+        #self.loadFile()
 
     def updateUI(self):
-        pass
+        ui = self.ui
+        emu = self.emu
+        # load ins table 
+        ui.insTable.setRowCount(len(emu.ins_list))
+        for row in range(len(emu.ins_list)):
+            ui.insTable.setItem(row,0,QtGui.QTableWidgetItem(str(emu.ins_list[row].op)))
+            ui.insTable.setItem(row,1,QtGui.QTableWidgetItem("F"+str(emu.ins_list[row].rd)))
+            if emu.ins_list[row].op in ['LD','ST']:
+                ui.insTable.setItem(row,2,QtGui.QTableWidgetItem(str(emu.ins_list[row].rs)))
+                ui.insTable.setItem(row,3,QtGui.QTableWidgetItem(''))
+            else:
+                ui.insTable.setItem(row,2,QtGui.QTableWidgetItem("F"+str(emu.ins_list[row].rs)))
+                ui.insTable.setItem(row,3,QtGui.QTableWidgetItem("F"+str(emu.ins_list[row].rt)))
+            for st_index in range(4,7):
+                ui.insTable.setItem(row,st_index,QtGui.QTableWidgetItem(''))
+            if emu.ins_list[row].state>0:
+                ui.insTable.setItem(row,emu.ins_list[row].state+3,QtGui.QTableWidgetItem("!"))
+
+        # load rs
+        rs_display_map = [ ('op',1),('vj',2),('vk',3),('qj',4),('qk',5) ]
+        for i in range(5):
+            rs = emu.rs_list[i+7]
+            if rs.busy:
+                ui.rsTable.setItem(i,0,QtGui.QTableWidgetItem('Yes'))
+                for col in rs_display_map:
+                    ui.rsTable.setItem(i,col[1],QtGui.QTableWidgetItem(str(getattr(rs,col[0]))))
+            else:
+                ui.rsTable.setItem(i,0,QtGui.QTableWidgetItem('No'))
+                for col in range(1,6):
+                    ui.rsTable.setItem(i,col,QtGui.QTableWidgetItem(''))
+
+        # load loadbuffer
+        for i in range(3):
+            rs = emu.rs_list[i+1]
+            if rs.busy:
+                ui.loadBufferTable.setItem(i,0,QtGui.QTableWidgetItem('Yes'))
+                ui.loadBufferTable.setItem(i,1,QtGui.QTableWidgetItem(str(rs.A)))
+            else:
+                ui.loadBufferTable.setItem(i,0,QtGui.QTableWidgetItem('No'))
+                ui.loadBufferTable.setItem(i,1,QtGui.QTableWidgetItem(''))
+        
+        # load storebuffer
+        for i in range(3):
+            rs = emu.rs_list[i+4]
+            if rs.busy:
+                ui.storeBufferTable.setItem(i,0,QtGui.QTableWidgetItem('Yes'))
+                ui.storeBufferTable.setItem(i,1,QtGui.QTableWidgetItem(str(rs.A)))
+                ui.storeBufferTable.setItem(i,2,QtGui.QTableWidgetItem(str(rs.qj)))
+            else:
+                ui.storeBufferTable.setItem(i,0,QtGui.QTableWidgetItem('No'))
+                ui.storeBufferTable.setItem(i,1,QtGui.QTableWidgetItem(''))
+                ui.storeBufferTable.setItem(i,2,QtGui.QTableWidgetItem(''))
+
+        # load/store queue
+        for i in range(6):
+            if i<len(emu.memory_queue) :
+                if emu.memory_queue[i] <=3:
+                    ui.lsQueueTable.setItem(0,i,QtGui.QTableWidgetItem('Load'+str(emu.memory_queue[i])))
+                else:
+                    ui.lsQueueTable.setItem(0,i,QtGui.QTableWidgetItem('Store'+str(emu.memory_queue[i]-3)))
+            else:
+                ui.lsQueueTable.setItem(0,i,QtGui.QTableWidgetItem(''))
+
+        # register table
+        for i in range(11):
+            ui.regTable.setItem(0,i,QtGui.QTableWidgetItem(str(emu.registers.qi[i])))
+            ui.regTable.setItem(1,i,QtGui.QTableWidgetItem(str(emu.registers.val[i])))
+        
+        # memory
+        cur_row = 0
+        for mem_index in range(1024):
+            if emu.memory.data[mem_index] != 0:
+                if cur_row>=ui.memTable.rowCount():
+                    ui.memTable.insertRow(cur_row)
+                ui.memTable.setItem(cur_row,0,QtGui.QTableWidgetItem(str(mem_index*4)))
+                ui.memTable.setItem(cur_row,1,QtGui.QTableWidgetItem(str(emu.memory.data[mem_index])))
+                cur_row+=1
+        
+        ui.lblClock.setText(str(emu.clock_now))
         
     def adjustUi(self):
         self.adjustTable(self.ui.insTable)
@@ -51,8 +133,10 @@ class MainWindow(QtGui.QMainWindow):
         self.adjustTable(self.ui.lsQueueTable)
         self.adjustTable(self.ui.regTable)
         self.adjustTable(self.ui.memTable)
+        
     def adjustTable(self,table):
         table.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+
     def bindSignal(self):
         ui = self.ui
         ui.actLoad.triggered.connect(self.loadFile)
@@ -69,7 +153,8 @@ class MainWindow(QtGui.QMainWindow):
         if fname!='':
             with open(fname) as ins_file:
                 ins_str = ins_file.read()
-            self.loadInstruction(ins_str)
+                print ins_str
+                self.loadInstruction(ins_str)
 
     def inputInstruction(self):
         dlg = InsInputDialog(self)
@@ -77,14 +162,34 @@ class MainWindow(QtGui.QMainWindow):
             self.loadInstruction(dlg.getIns())
 
     def loadInstruction(self,ins_str):
-        pass
+        self.emu.read_ins(ins_str)
+        self.updateUI()
+        state = 1
 
     def runStep(self):
-        pass
+        if self.emu.done():
+            self.showFinishDialog()
+        else:
+            self.emu.step()
+            self.updateUI()
+            if self.emu.done():
+                self.showFinishDialog()
+                if self.timer.isActive():
+                    self.timer.stop()
+
     def runMultiStep(self):
-        pass
+        self.timer.setInterval(1000)
+        self.timer.timeout.connect(self.runStep)
+        self.timer.start()
+
     def run(self):
-        pass
+        while not self.emu.done():
+            self.emu.step()
+            print self.emu.clock_now
+        self.updateUI()
+        self.showFinishDialog()
+        
+        
     def editMem(self):
         addr = int(self.ui.edtMemAddr.text())
         value = float(self.ui.edtMemValue.text())
@@ -106,6 +211,11 @@ class MainWindow(QtGui.QMainWindow):
         newValueItem=QtGui.QTableWidgetItem(str(value))
         memTable.setItem(row,0,newAddrItem)
         memTable.setItem(row,1,newValueItem)
+        
+        self.emu.memory.data[addr/4] = value
+    def showFinishDialog(self):
+        msg = QtGui.QMessageBox(QtGui.QMessageBox.Information,"Info",u"已执行完毕")
+        msg.exec_()
 
 
 if __name__=="__main__":

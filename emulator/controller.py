@@ -9,7 +9,9 @@ class Controller:
         self.ins_list = list()
         self.ins_current_id = 0 # The next instruction to execute
 
-        self.reg_size = 32 self.mem_size = 4096 self.registers = Reg(size=self.reg_size)
+        self.reg_size = 32
+        self.mem_size = 4096
+        self.registers = Reg(size=self.reg_size)
         self.memory = Mem(size=self.mem_size)
 
         # 0-2 load
