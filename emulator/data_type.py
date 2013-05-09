@@ -1,5 +1,7 @@
 class RS:
     def __init__(self):
+        self.reset()
+    def reset(self):
         self.op = ''
         self.qj = self.qk = 0
         self.vj = self.vk = 0
@@ -19,6 +21,9 @@ class Ins:
         self.op = ''
         # rd, rs, rt
         self.rs = self.rt = self.rd = 0
+
+    def reset(self):
+        self.state = 0
     
     @staticmethod
     def parse(ins_str):
@@ -59,6 +64,9 @@ class Reg:
     def __init__(self, size=32):
         self.qi = [0 for i in range(size)]
         self.val = [0.0 for i in range(size)]
+    def reset(self):
+        self.qi = [0 for i in range(len(self.qi))]
+        self.val = [0.0 for i in range(len(self.val))]
 
 class Mem:
     def __init__(self, size=4096):
@@ -67,3 +75,5 @@ class Mem:
         return self.data[index]
     def set_item(self, index, _data):
         self.data[index] = _data
+    def reset(self):
+        self.data = [0.0 for i in range(len(self.data))]

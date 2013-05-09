@@ -1,0 +1,5 @@
+Peiyun, May, 9, 2013,
+New interfaces:
+	1. boolean done()
+	2. void reset() 
+[Done]

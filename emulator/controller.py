@@ -32,6 +32,24 @@ class Controller:
 
         # setup timer
         self.clock_now = 0
+    def reset(self):
+        # reset instructions' state
+        for ins in self.ins_list:
+            ins.reset()
+
+        self.registers.reset()
+        self.memory.reset()
+
+        for rs in self.rs_list:
+            rs.reset()
+
+        self.mem_unit.reset()
+        self.add_unit.reset()
+        self.multi_unit.reset()
+
+        self.memory_queue = list()
+
+        self.clock_now = 0
     def read_ins(self,ins_text_data):
         ins_lines = ins_text_data.split('\n')
         ins_lines.remove('')
@@ -55,20 +73,31 @@ class Controller:
     def print_reg(self):
         for reg_id in range(self.reg_size):
             print 'Registers: Q[%d]: %d, Value[%d]: %f' % (reg_id, self.registers.qi[reg_id], reg_id, self.registers.val[reg_id])
+
+    def print_rs(self):
+        for rs_id in range(len(self.rs_list)):
+            print 'RS #%d, Op: %s, Qj: %d, Qk: %d, Vj: %d, Vk: %d, busy: %d, A: %d' % (rs_id, self.rs_list[rs_id].op, self.rs_list[rs_id].qj, self.rs_list[rs_id].qk, self.rs_list[rs_id].vj, self.rs_list[rs_id].vk, self.rs_list[rs_id].busy, self.rs_list[rs_id].A)
     
+    def print_units(self):
+        print 'add unit: rs_id: %d, result: %f, busy: %d, end_time: %d ' % ( self.add_unit.rs_id, self.add_unit.result, self.add_unit.busy, self.add_unit.end_time)
+        print 'mult unit: rs_id: %d, result: %f, busy: %d, end_time: %d ' % ( self.multi_unit.rs_id, self.multi_unit.result, self.multi_unit.busy, self.add_unit.end_time) 
+
+    def done(self):
+        for ins in self.ins_list:
+            if ins.state <= 2:
+                return False
+
+        return True
+
     def run(self):
         while True:
-            halt = True
-            for ins in self.ins_list:
-                if ins.state <= 2:
-                    halt = False
-
-            if halt == True:
+            if self.done() == True:
                 break
 
             self.step()
-            self.print_state()
-            time.sleep(4)
+#            self.print_rs()
+#            self.print_state()
+#            self.print_units()
 
     def step(self):
         # increment clock 
@@ -209,6 +238,15 @@ class Controller:
             if ins.op == 'LD': # Load
                 self.registers.val[ins.rd] = self.mem_unit.result
                 self.registers.qi[ins.rd] = 0
+
+                for i in range(self.rs_map['LD'][0], self.rs_map['MULD'][1]):
+                    if self.rs_list[i].qj == self.mem_unit.rs_id:
+                        self.rs_list[i].qj = 0
+                        self.rs_list[i].vj = self.mem_unit.result
+                    if self.rs_list[i].qk == self.mem_unit.rs_id:
+                        self.rs_list[i].qk = 0
+                        self.rs_list[i].vk = self.mem_unit.result
+
             else: # Store
                 self.memory.set_item(self.rs_list[rs_index].A/4, self.mem_unit.result) 
 
