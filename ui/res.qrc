@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="icon">
+    <file>mem.png</file>
+    <file>clock.png</file>
+    <file>edit.png</file>
+    <file>load.png</file>
+    <file>mult_step.png</file>
+    <file>run.png</file>
+    <file>step.png</file>
+  </qresource>
+</RCC>
