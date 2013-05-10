@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Thu May  9 21:52:08 2013
+# Created: Fri May 10 10:50:06 2013
 #      by: PyQt4 UI code generator 4.9.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -299,8 +299,6 @@ class Ui_MainWindow(object):
         self.menu.setObjectName(_fromUtf8("menu"))
         self.menu_2 = QtGui.QMenu(self.menubar)
         self.menu_2.setObjectName(_fromUtf8("menu_2"))
-        self.menu_3 = QtGui.QMenu(self.menubar)
-        self.menu_3.setObjectName(_fromUtf8("menu_3"))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
@@ -339,23 +337,34 @@ class Ui_MainWindow(object):
         icon6.addPixmap(QtGui.QPixmap(_fromUtf8(":/icon/mem.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actMem.setIcon(icon6)
         self.actMem.setObjectName(_fromUtf8("actMem"))
+        self.actRestart = QtGui.QAction(MainWindow)
+        icon7 = QtGui.QIcon()
+        icon7.addPixmap(QtGui.QPixmap(_fromUtf8(":/icon/restart.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actRestart.setIcon(icon7)
+        self.actRestart.setObjectName(_fromUtf8("actRestart"))
+        self.actPause = QtGui.QAction(MainWindow)
+        icon8 = QtGui.QIcon()
+        icon8.addPixmap(QtGui.QPixmap(_fromUtf8(":/icon/pause.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actPause.setIcon(icon8)
+        self.actPause.setObjectName(_fromUtf8("actPause"))
         self.menu.addAction(self.actLoad)
         self.menu.addAction(self.actEdit)
         self.menu_2.addAction(self.actStep)
         self.menu_2.addAction(self.actMultStep)
+        self.menu_2.addAction(self.actPause)
         self.menu_2.addAction(self.actRun)
-        self.menu_3.addAction(self.actMem)
+        self.menu_2.addAction(self.actRestart)
         self.menubar.addAction(self.menu.menuAction())
         self.menubar.addAction(self.menu_2.menuAction())
-        self.menubar.addAction(self.menu_3.menuAction())
         self.toolBar.addAction(self.actLoad)
         self.toolBar.addAction(self.actEdit)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.actStep)
         self.toolBar.addAction(self.actMultStep)
+        self.toolBar.addAction(self.actPause)
         self.toolBar.addAction(self.actRun)
+        self.toolBar.addAction(self.actRestart)
         self.toolBar.addSeparator()
-        self.toolBar.addAction(self.actMem)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -484,7 +493,6 @@ class Ui_MainWindow(object):
         item.setText(QtGui.QApplication.translate("MainWindow", "F10", None, QtGui.QApplication.UnicodeUTF8))
         self.menu.setTitle(QtGui.QApplication.translate("MainWindow", "指令", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_2.setTitle(QtGui.QApplication.translate("MainWindow", "执行", None, QtGui.QApplication.UnicodeUTF8))
-        self.menu_3.setTitle(QtGui.QApplication.translate("MainWindow", "内存", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
         self.actLoad.setText(QtGui.QApplication.translate("MainWindow", "载入文件", None, QtGui.QApplication.UnicodeUTF8))
         self.actEdit.setText(QtGui.QApplication.translate("MainWindow", "手动编辑", None, QtGui.QApplication.UnicodeUTF8))
@@ -493,5 +501,9 @@ class Ui_MainWindow(object):
         self.actMultStep.setText(QtGui.QApplication.translate("MainWindow", "连续单步执行", None, QtGui.QApplication.UnicodeUTF8))
         self.actRun.setText(QtGui.QApplication.translate("MainWindow", "连续执行", None, QtGui.QApplication.UnicodeUTF8))
         self.actMem.setText(QtGui.QApplication.translate("MainWindow", "编辑器", None, QtGui.QApplication.UnicodeUTF8))
+        self.actRestart.setText(QtGui.QApplication.translate("MainWindow", "重新开始", None, QtGui.QApplication.UnicodeUTF8))
+        self.actRestart.setToolTip(QtGui.QApplication.translate("MainWindow", "重新开始", None, QtGui.QApplication.UnicodeUTF8))
+        self.actPause.setText(QtGui.QApplication.translate("MainWindow", "暂停", None, QtGui.QApplication.UnicodeUTF8))
+        self.actPause.setToolTip(QtGui.QApplication.translate("MainWindow", "暂停", None, QtGui.QApplication.UnicodeUTF8))
 
 import res_rc

@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="icon">
+    <file>pause.png</file>
+    <file>restart.png</file>
     <file>mem.png</file>
     <file>clock.png</file>
     <file>edit.png</file>

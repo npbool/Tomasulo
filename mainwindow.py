@@ -42,12 +42,18 @@ class MainWindow(QtGui.QMainWindow):
         self.emu = emulator.controller.Controller() 
         self.state = 0 #0:initial 1:loade 2:step 3:run
 
-        #self.loadFile()
+        self.ui.actMultStep.setEnabled(False)
+        self.ui.actStep.setEnabled(False)
+        self.ui.actRun.setEnabled(False)
+        self.ui.actPause.setEnabled(False)
+        self.ui.actRestart.setEnabled(False)
+        self.ui.btnMemModify.setEnabled(False)
 
     def updateUI(self):
         ui = self.ui
         emu = self.emu
         # load ins table 
+        checkIcon = QtGui.QIcon("ui/check.png")
         ui.insTable.setRowCount(len(emu.ins_list))
         for row in range(len(emu.ins_list)):
             ui.insTable.setItem(row,0,QtGui.QTableWidgetItem(str(emu.ins_list[row].op)))
@@ -59,9 +65,9 @@ class MainWindow(QtGui.QMainWindow):
                 ui.insTable.setItem(row,2,QtGui.QTableWidgetItem("F"+str(emu.ins_list[row].rs)))
                 ui.insTable.setItem(row,3,QtGui.QTableWidgetItem("F"+str(emu.ins_list[row].rt)))
             for st_index in range(4,7):
-                ui.insTable.setItem(row,st_index,QtGui.QTableWidgetItem(''))
+                ui.insTable.setItem(row,st_index,QtGui.QTableWidgetItem(QtGui.QIcon(),''))
             if emu.ins_list[row].state>0:
-                ui.insTable.setItem(row,emu.ins_list[row].state+3,QtGui.QTableWidgetItem("!"))
+                ui.insTable.setItem(row,emu.ins_list[row].state+3,QtGui.QTableWidgetItem(checkIcon,''))
 
         # load rs
         rs_display_map = [ ('op',1),('vj',2),('vk',3),('qj',4),('qk',5) ]
@@ -114,6 +120,7 @@ class MainWindow(QtGui.QMainWindow):
             ui.regTable.setItem(1,i,QtGui.QTableWidgetItem(str(emu.registers.val[i])))
         
         # memory
+        ui.memTable.setRowCount(0) 
         cur_row = 0
         for mem_index in range(1024):
             if emu.memory.data[mem_index] != 0:
@@ -144,7 +151,8 @@ class MainWindow(QtGui.QMainWindow):
         ui.actStep.triggered.connect(self.runStep)
         ui.actMultStep.triggered.connect(self.runMultiStep)
         ui.actRun.triggered.connect(self.run)
-        ui.actMem.triggered.connect(self.editMem)
+        ui.actRestart.triggered.connect(self.restart)
+        ui.actPause.triggered.connect(self.pause) 
         
         ui.btnMemModify.clicked.connect(self.editMem)
 
@@ -159,14 +167,24 @@ class MainWindow(QtGui.QMainWindow):
     def inputInstruction(self):
         dlg = InsInputDialog(self)
         if dlg.exec_()==QtGui.QDialog.Accepted:
-            self.loadInstruction(dlg.getIns())
+            ins_str = str(dlg.getIns())
+            if not ins_str.endswith('\n'):
+                ins_str+='\n'
+            self.loadInstruction(ins_str)
 
     def loadInstruction(self,ins_str):
         self.emu.read_ins(ins_str)
         self.updateUI()
         state = 1
 
+        self.ui.actMultStep.setEnabled(True)
+        self.ui.actStep.setEnabled(True)
+        self.ui.actRun.setEnabled(True)
+        self.ui.btnMemModify.setEnabled(True)
+
     def runStep(self):
+        self.ui.btnMemModify.setEnabled(False)
+        self.ui.actRestart.setEnabled(True)
         if self.emu.done():
             self.showFinishDialog()
         else:
@@ -178,16 +196,41 @@ class MainWindow(QtGui.QMainWindow):
                     self.timer.stop()
 
     def runMultiStep(self):
+        self.ui.btnMemModify.setEnabled(False)
+        self.ui.actRestart.setEnabled(False)
+        self.ui.actStep.setEnabled(False)
+        self.ui.actMultStep.setEnabled(False)
+        self.ui.actRun.setEnabled(False)
+        self.ui.actPause.setEnabled(True)
+
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.runStep)
         self.timer.start()
 
+    def pause(self):
+        self.ui.actStep.setEnabled(True)
+        self.ui.actMultStep.setEnabled(True)
+        self.ui.actRun.setEnabled(True)
+        self.ui.actPause.setEnabled(False)
+        self.timer.stop()
+
     def run(self):
+        self.ui.actRestart.setEnabled(True)
+        self.ui.btnMemModify.setEnabled(False)
         while not self.emu.done():
             self.emu.step()
             print self.emu.clock_now
         self.updateUI()
         self.showFinishDialog()
+
+    def restart(self):
+        self.ui.btnMemModify.setEnabled(True)
+        self.emu.reset()
+        self.updateUI()
+        self.ui.actStep.setEnabled(True)
+        self.ui.actMultStep.setEnabled(True)
+        self.ui.actRun.setEnabled(True)
+        self.ui.btnMemModify.setEnabled(True)
         
         
     def editMem(self):

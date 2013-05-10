@@ -48,11 +48,14 @@ class Controller:
         self.multi_unit.reset()
 
         self.memory_queue = list()
+        
+        self.ins_current_id=0
 
         self.clock_now = 0
     def read_ins(self,ins_text_data):
         ins_lines = ins_text_data.split('\n')
         ins_lines.remove('')
+        self.ins_list = []
         for ins_line in ins_lines:
             self.ins_list.append(Ins.parse(ins_line))
     

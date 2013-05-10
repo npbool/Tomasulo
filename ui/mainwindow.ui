@@ -577,17 +577,12 @@
     </property>
     <addaction name="actStep"/>
     <addaction name="actMultStep"/>
+    <addaction name="actPause"/>
     <addaction name="actRun"/>
-   </widget>
-   <widget class="QMenu" name="menu_3">
-    <property name="title">
-     <string>内存</string>
-    </property>
-    <addaction name="actMem"/>
+    <addaction name="actRestart"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
-   <addaction name="menu_3"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -611,9 +606,10 @@
    <addaction name="separator"/>
    <addaction name="actStep"/>
    <addaction name="actMultStep"/>
+   <addaction name="actPause"/>
    <addaction name="actRun"/>
+   <addaction name="actRestart"/>
    <addaction name="separator"/>
-   <addaction name="actMem"/>
   </widget>
   <action name="actLoad">
    <property name="icon">
@@ -670,6 +666,30 @@
    </property>
    <property name="text">
     <string>编辑器</string>
+   </property>
+  </action>
+  <action name="actRestart">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/icon/restart.png</normaloff>:/icon/restart.png</iconset>
+   </property>
+   <property name="text">
+    <string>重新开始</string>
+   </property>
+   <property name="toolTip">
+    <string>重新开始</string>
+   </property>
+  </action>
+  <action name="actPause">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/icon/pause.png</normaloff>:/icon/pause.png</iconset>
+   </property>
+   <property name="text">
+    <string>暂停</string>
+   </property>
+   <property name="toolTip">
+    <string>暂停</string>
    </property>
   </action>
  </widget>
